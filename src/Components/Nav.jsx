@@ -12,7 +12,7 @@ const Nav = () => {
                     <Link to={"/bookmarks"}>Bookmarks</Link>
                 </li>
                 <li>
-                    <Link to={"/new"}>Create Bookmark</Link>
+                    <Link to={"/bookmarks/new"}>Create Bookmark</Link>
                 </li>
             </ul>
         </nav>
