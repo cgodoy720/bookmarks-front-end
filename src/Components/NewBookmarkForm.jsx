@@ -77,7 +77,7 @@ const NewBookmarkForm = () => {
                         type="text" 
                         placeholder="Website Description"
                         value={newBookmark.description}
-                        required
+                        // required
                         onChange={handleChange}
                     /><br></br>
                     <label htmlFor='is_favorite'>Favorite: </label>
