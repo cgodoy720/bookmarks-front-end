@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const API = import.meta.env.VITE_BASE_URL;
 
@@ -13,6 +13,37 @@ const NewBookmarkForm = () => {
         is_favorite: false
     })
 
+
+    // Destiny code start -> imported useparams above
+
+    const {id} = useParams()
+
+    useEffect(() => {
+        if(id){
+            fetch(`${API}/bookmarks/${id}`)
+            .then(res => res.json())
+            .then(resJson => setNewBookmark(resJson)
+            )
+            .catch(err=>console.log(err))
+        }
+    },[])
+
+    const handleEditSubmit = (event) => {
+        event.preventDefault()
+        fetch(`${API}/bookmarks/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(newBookmark),
+            headers: {
+                "Content-Type": "application/json"
+        }
+    })
+    .then(() => navigate(`/bookmarks/${id}`))
+    .catch(err => console.log(err))
+
+    }
+
+    // Destiny code finished
+
     const handleChange = (event) => {
         // console.log(event.target.id)
         setNewBookmark((prev) => {
@@ -21,8 +52,12 @@ const NewBookmarkForm = () => {
     }
 
     const handleCheckboxChange = (event) => {
+        const isChecked = event.target.checked
+        // setNewBookmark((prev) => {
+        //     return { ...prev, is_favorite: !newBookmark.is_favorite }
+        // })
         setNewBookmark((prev) => {
-            return { ...prev, is_favorite: !newBookmark.is_favorite }
+            return { ...prev, is_favorite: isChecked }
         })
     }
 
@@ -35,13 +70,13 @@ const NewBookmarkForm = () => {
                 "Content-Type": "application/json"
             }
         })
-            .then(() => navigate("/bookmarks"))
+            .then((res) =>navigate("/bookmarks"))
             .catch(err => console.log(err))
     }
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={!id ? handleSubmit: handleEditSubmit }>
                 <fieldset>
                     <legend>Bookmark Info</legend>
                     <label htmlFor="name">Name: </label>
@@ -77,7 +112,7 @@ const NewBookmarkForm = () => {
                         type="text" 
                         placeholder="Website Description"
                         value={newBookmark.description}
-                        required
+                        // required
                         onChange={handleChange}
                     /><br></br>
                     <label htmlFor='is_favorite'>Favorite: </label>
@@ -85,9 +120,11 @@ const NewBookmarkForm = () => {
                         id="is_favorite"
                         type="checkbox" 
                         value={newBookmark.is_favorite}
+                        checked={newBookmark.is_favorite}
                         onChange={handleCheckboxChange}
                     /><br></br>
-                    <input type="submit" value="Add Bookmark"/>
+
+                    <input type="submit" value={ !id ? "Add Bookmark": "Update Bookmark"}/>
                 </fieldset>
             </form>
         </div>
